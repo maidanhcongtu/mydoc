@@ -1,0 +1,142 @@
+= Basic MVC5
+
+== *Install library necessary*
+
+From Package Management Console
+
+[source, code]
+----
+Install-Package Microsoft.Owin <1>
+Install-Package Microsoft.AspNet.Identity.Core <1>
+Install-Package Microsoft.Owin.Host.SystemWeb <1>
+Install-Package Microsoft.Owin.Security <1>
+Install-Package Microsoft.AspNet.Identity.Owin <1>
+Install-Package Facebook -Pre <2>
+----
+<1> Use for authentication
+
+
+== *Authenticate*
+
+=== _Create login form_
+
+[source, html, linenums]
+----
+<form action="" method="post">
+    username <input type="text" name="username" /><br/>
+    password <input type="password" name="password" /><br />
+    <input type="submit" value="dang nhap"/>
+</form>
+----
+
+
+=== _Process in Login_
+
+[source, java, linenums]
+----
+[HttpPost]
+public ActionResult Login(String username, String Password)
+{
+    if (username == "admin" && Password == "123") <1>
+    {
+        var claims = new List<Claim>(); <2>
+        claims.Add(new Claim(ClaimTypes.Name, "admin")); <2>
+        claims.Add(new Claim(ClaimTypes.Email, "myemail@gmail.com")); <2>
+
+
+        claims.Add(new Claim(ClaimTypes.Role, "ADMIN")); <3>
+
+
+        var id = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+
+        var ctx = Request.GetOwinContext();
+        var authenticationManager = ctx.Authentication;
+        authenticationManager.SignIn(id); <4>
+
+        string returnUrl = Request.QueryString["ReturnUrl"]; <5>
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            System.Diagnostics.Debug.WriteLine("url " + returnUrl);
+            return Redirect(returnUrl); <6>
+        }
+        return RedirectToAction("Index", "Home");
+    }
+    return View();
+}
+----
+
+=== _Create startupAuth class to active Owin_
+
+*Crate class #StartupAuth.cs# in #App_Start# with following content*
+
+[source, java]
+----
+using System;
+using System.Threading.Tasks;
+using Microsoft.Owin;
+using Owin;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.AspNet.Identity;
+using System.Configuration;
+using Microsoft.Owin.Security.Google;
+using Microsoft.Owin.Security.Facebook;
+using System.Security.Claims;
+
+[assembly: OwinStartup(typeof(myshop.App_Start.StartupAuth))]
+
+namespace myshop.App_Start
+{
+    public class StartupAuth
+    {
+        public void Configuration(IAppBuilder app)
+        {
+
+            // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=316888
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/Account/Login")
+            }); <1>
+        }
+    }
+}
+----
+
+=== _Defined unique claim type_
+
+* In class Global.asax add this #AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;# in #Application_Start# method like this.
+
+[source, java]
+----
+protected void Application_Start()
+{
+    AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
+
+    //... other code
+}
+----
+
+== *Check and Create folder*
+[source, java]
+----
+string tempFolder = Server.MapPath("~/Assert/images/temp");
+if (!Directory.Exists(tempFolder))
+{
+    Directory.CreateDirectory(tempFolder);
+}
+----
+
+== *Off custom error page*
+
+* Put `<customErrors mode="Off"/>` in `<system.web>`
+
+[source, xml]
+----
+<!-- Web.Config Configuration File -->
+
+<configuration>
+    <system.web>
+        <customErrors mode="Off"/>
+    </system.web>
+</configuration>
+----

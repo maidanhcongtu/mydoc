@@ -1,0 +1,114 @@
+32--Change dns
+	nano /etc/resolv.conf
+	nameserver 8.8.8.8
+	nameserver 8.8.4.4
+	sudo rm -fR /var/lib/apt/lists/*
+31--install openssh-server
+	sudo apt-get install openssh-server
+30--Install open jdk 7
+	sudo apt-get install openjdk-7-jdk
+29--uninstall open jdk
+	>>> http://askubuntu.com/questions/335457/how-to-uninstall-openjdk
+	sudo apt-get purge openjdk-7-jre gcj-4.7-base gcj-4.7-jre openjdk-6-jre-headless
+	or
+	sudo apt-get autoremove openjdk-7-jre 
+	sudo apt-get purge openjdk*
+28--set up enviremon java home
+	>>> http://mariosgaee.blogspot.com/2010/11/install-apache-geronimo-as-service-on.html
+	"Open .bashrc file:
+	gedit /home/${user}/.bashrc
+
+	Add JAVA_HOME, JRE_HOME and JAVA_OPTS at the end of .bashrc:
+	export JAVA_HOME=/usr/lib/jvm/java-6-sun    
+	export JRE_HOME=/usr/lib/jvm/java-6-sun/jre
+	export JAVA_OPTS=""-Xmx256m -XX:MaxPermSize=128m""
+	Run .bashrc (just this once):
+	. .bashrc"
+27--increase memory geronimo
+	"in/opt/geronimo/bin 
+	Add export JAVA_OPTS=""-Xmx256m -XX:MaxPermSize=128m"" to geronimo-service"
+26--open root account
+	>>> http://en.kioskea.net/faq/3502-ubuntu-enable-root-account
+	sudo passwd root
+25--change user to root
+	sudo -s
+24--extract file tar
+	tar -xvf file.tar
+23--change folder
+	mv oldforld newfolder
+22--install postgres 9.3
+	"sudo nano /etc/apt/sources.list.d/pgdg.list
+	# - Add
+	# deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main
+	# - and save
+	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+	sudo apt-get update
+	sudo apt-get install postgresql-9.3 libpq-dev
+	sudo nano /etc/postgresql/9.3/main/pg_hba.conf"
+21--start postgres sql
+	sudo service postgresql start (or restart/stop/status)
+20--change password postgres
+	>>> https://gist.github.com/halilim/9936450
+	sudo ­u postgres psql postgres
+	\password postgres
+19--remote postgres
+	in /etc/postgresql/9.1/main/postgresql.conf
+	Change: listen_addresses = '*'
+ 	in /etc/postgresql/9.3/main/pg_hba.conf
+	host all postgres id/16 trust
+18--install node js
+	sudo apt-get install python-software-properties python g++ make
+	sudo add-apt-repository ppa:chris-lea/node.js
+	sudo apt-get update
+	sudo apt-get install nodejs 
+17--check tomcat status
+	sudo service tomcat7 status
+16--change port tomcat
+	>>>	http://stackoverflow.com/questions/23272666/tomcat7-bind-to-port-80-fails-in-ubuntu-14-04lts
+	set AUTHBIND=yes in /etc/default/tomcat7 file
+	sudo touch /etc/authbind/byport/80
+	sudo chmod 500 /etc/authbind/byport/80
+	sudo chown tomcat7 /etc/authbind/byport/80
+	nano /etc/tomcat7/serverxml
+	Change Connector port=”8080? With Connector port=”80?
+	sudo /etc/init.d/tomcat7 restart
+15--install admin tomcat 
+	sudo apt-get install tomcat7-docs tomcat7-admin tomcat7-examples
+14--Add user admin to tomcat user
+	<role rolename="manager"/>
+	<role rolename="manager-gui"/>
+	<role rolename="manager-script"/>
+	<role rolename="manager-jmx"/>
+	<role rolename="manager-status"/>
+	<role rolename="admin"/>
+	<user username="admin" password="admin" roles="admin,manager,manager-gui,manager-scr"/>
+13--Improve memory in tomcat
+	JAVA_OPTS="-Djava.awt.headless=true -Xmx1024m -XX:+UseConcMarkSweepGC" in /etc/default/tomcat7
+12--Restart tomcat
+	sudo /etc/init.d/tomcat7 restart(stop/start)
+11--Check service listen on port
+	netstat -aunt | grep 81
+10--library for oracle jdk for export pdf in wkhtmltopdf
+	+ install
+		sudo apt-get install libjpeg8 libxrender1 libfontconfig1
+	+ uninstall
+		sudo apt-get autoremove libjpeg8 libxrender1 libfontconfig1
+9-- tar -xvf file.tar
+8-- gzip file.tz
+	
+7--list all service
+	service --status-all
+6--register geronimo as service in ubuntu
+	1. go to /bin directory and run
+	2 ./register-service add name(dat gi day)
+5-- kill service by
+	+ kill -9 id(list in fuser -v 1099/tcp)
+4-- show all service use tcp port
+	+ fuser -v 1099/tcp
+3-- show all service in ubuntu
+	+ service --status-all
+2-- run geronimo in cmd
+	+ change directory to /bin and run "geronimo run"
+1--postgres 9.3 on ubuntu
+	+ remove postgre
+		sudo apt-get --purge remove postgresql

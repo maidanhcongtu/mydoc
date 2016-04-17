@@ -1,0 +1,13 @@
+= Enable Debug
+
+== Open file standalone.bat in {wildflyhome}\bin
+
+[source, cmd]
+----
+set DEBUG_MODE=true
+set DEBUG_PORT=8787
+----
+
+== Open eclipse and config
+
+remember change port remote to 8787

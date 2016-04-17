@@ -1,0 +1,37 @@
+*************************************************************************************
+* view img from servlet
+*************************************************************************************
+
+<!-- ---------------------------
+ 	b1 function  
+------------------------ -->
+	public void viewImg(HttpServletResponse response,String outputPath,String filename) throws IOException{
+		File file = new File(outputPath);
+		if(file.exists()){
+			FileInputStream inputStream= new FileInputStream(file);
+			ServletOutputStream outStream = response.getOutputStream();
+	        byte[] buffer = new byte[4096];
+	        int bytesRead = -1;
+	        response.setContentType("image/*");
+			response.setHeader("Content-Disposition","inline;filename="+filename);
+			response.setContentLength((int) file.length());
+	        while ((bytesRead = inputStream.read(buffer)) != -1) {
+	            outStream.write(buffer, 0, bytesRead);
+	        }
+	        inputStream.close();
+	        outStream.close();
+		}
+	}
+
+<!-- ---------------------------
+ 	b2 use in controller  
+------------------------ -->
+	@RequestMapping("/viewimg/{name:.+}")
+	public void viewimg(@PathVariable("name") String name,HttpServletResponse response) throws IOException{
+		String pathImg = "D:/mhdanh/"+name;
+		viewImg(response, pathImg, name);
+	}
+<!-- ---------------------------
+ 	b3 use in view  
+------------------------ -->
+	<img src="<c:url value='/viewimg/vba.jpg'/>" alt="Generate img"/>

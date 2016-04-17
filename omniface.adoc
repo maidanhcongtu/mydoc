@@ -1,0 +1,35 @@
+﻿= Set up Omnifaces
+
+== Link References
+http://showcase.omnifaces.org/[Omnifaces]
+
+== Download Omnifaces version 1.11
+
+[IMPORTANT]
+Required: Java 1.6, JSF 2.0, EL 2.1, Servlet 2.5
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.omnifaces</groupId>
+    <artifactId>omnifaces</artifactId>
+    <version>1.11</version>
+</dependency>
+----
+
+== Add library to Ivy
+
+*Put that library to lib folder ivy*
+
+[source,code]
+----
+{IvyHome}\webapps\ivy\WEB-INF\lib
+----
+
+== Import taglib
+
+[source,xml]
+----
+xmlns:o="http://omnifaces.org/ui"
+xmlns:of="http://omnifaces.org/functions"
+----

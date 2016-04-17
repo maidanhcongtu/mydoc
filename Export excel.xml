@@ -1,0 +1,68 @@
+*************************************************************************************
+* read and write excel
+*************************************************************************************
+
+<!-- ---------------------------
+ 	b1 require dependencies
+ ------------------------ -->
+
+<!-- Export excel -->
+	<dependency>
+		<groupId>net.sourceforge.jexcelapi</groupId>
+		<artifactId>jxl</artifactId>
+		<version>2.6.10</version>
+		<exclusions>
+			<exclusion>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi</artifactId>
+		<version>3.9</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.poi</groupId>
+		<artifactId>poi-ooxml</artifactId>
+		<version>3.9</version>
+	</dependency>
+
+<!-- ---------------------------
+ 	b2 read excel file
+ ------------------------ -->
+	Workbook workbook = Workbook.getWorkbook(new File(fileName));
+	Sheet sheet = workbook.getSheet(0);
+
+	for(int columnSheet = 0;columnSheet<11;columnSheet++){
+		List<String> row = new ArrayList<String>();
+		for(int rowSheet = 0;rowSheet<6;rowSheet++){
+			Cell cell = sheet.getCell(columnSheet,rowSheet);
+			System.out.println(cell.getContents());
+			row.add(sheet.getCell(columnSheet,rowSheet).getContents());
+		}
+		System.out.println();
+		listValueExcel.add(row);
+	}
+	workbook.close();
+
+<!-- ---------------------------
+ 	b3 write excel file
+ ------------------------ -->
+	File exlFile = new File("/opt/danh.xls");
+    WritableWorkbook writableWorkbook = Workbook.createWorkbook(exlFile);
+    WritableSheet writableSheet = writableWorkbook.createSheet("Sheet1", 0);
+
+    //Create Cells with contents of different data types. 
+    //Also specify the Cell coordinates in the constructor
+    Label label = new Label(0, 0, "Label (String)");
+    DateTime date = new DateTime(1, 0, new Date());
+
+    //Add the created Cells to the sheet
+    writableSheet.addCell(label);
+    writableSheet.addCell(date);
+
+    //Write and close the workbook
+    writableWorkbook.write();
+    writableWorkbook.close();

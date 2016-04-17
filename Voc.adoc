@@ -1,0 +1,120 @@
+﻿== 10/14/2015
+	* *resembles* the 80/20 rule
+	* methodology was *pioneered*
+	* Object Oriented CSS *advocates* building a component library
+	* Image *Sprites*
+	* *Traversing*
+
+== 9/10/2015
+	* Others find this *verbose*
+
+== 4/10/2015
+	* There were no *witness*
+	* i'm *desperate* for money right now
+	* what's bothering you
+	* now that i think about it
+	* how could you be so careless
+	* you dont *give in* to peer pressure
+	* I didnt have engouh change to pay the *fare*
+	* *torture*(n) - tra tan
+	* *moisture*(n) - hoi am
+	* immature # mature
+	* improbable an *improbable* story | improbaly
+	* you don't need it to write *decent* tests
+	* I afraid I will *mar* your functions
+	* Some notes related to *direct-billing*
+	* this is what I have so far
+	* Dont *panic*
+
+== 29/9/15
+	* is *superfluous*.
+	* clarity
+	* let me piggyback you home
+	* I think that the javadocs have *ample* examples
+	* My assistant has never been wrong
+	* and so humble, too
+	* you're Charming
+	* show me how you seduce a woman?
+	* do you put a price on everything?
+	* that's why i have to endure
+	* who doesn;t want that?
+	* why can't you admit it?
+	* no further action needed.
+
+
+== 24/9/15
+	* is not that *trivial* thing
+
+== 23/9/15
+	* novice
+	* To create a *stub*
+
+==  15/9/14
+	* To prevent accidental name *collisions* with your code
+	* only a *portion* of the view needs to be controlled by Angular.
+	* Scopes provide APIs ($watch) to observe model *mutations*.
+	* which *mimic* the DOM structure of the application
+	* All other scopes are *descendant* scopes of the root scope
+	* It was an *enormous* waste of time
+	* If you *anticipate*
+	* you need to be *conscious*
+	* But it seem more *prudent*
+	* *infant*  tre so sinh
+
+ 	* help you *demystify* the inner workings of AngularJS
+	* The fourth edition was *abandoned*
+	* beneath its *deceptive* 
+	* While it is often *derided* as a toy
+	* Because JavaScript is *notorious*
+
+==  28/5/14
+	* According to the *periodic* schedule of Hai Au building
+	* the power will be cut off on Wednesday 
+	* *Synonym*/ tu dong nghia
+
+== 23/5/14
+	* daydreaming/ mo mong
+	* No litter/ cam vut rac
+	* Don't peep!  Đừng nhìn lén!
+	* Scratch/ đường rạch,dường kẻ
+	* relief/ cứu trợ, cứu tế, sự giúp đở
+	* Always the same/ truoc sau nhu một
+	* particular/ riêng
+	* The same as usual!  Giống như mọi khi.
+	* Sorry for bothering!  Xin lỗi vì đã làm phiền.
+
+== 16/5/14
+	* repository/ kho
+	* Subversive/ lat do
+
+== 15/5/14
+	* invoke / goi
+
+== 14/5/14
+	* fragments/manh vo
+	* in order to/ de
+
+== 12/5/14
+	* mall/ trung tam mua sam
+	* accessories/ phu kien
+	* here she comes
+	* i think, i would'n see you again
+	* how is your life,
+	* i'm not married yet
+	* at the mall
+	* i sell mobile phone and accessories at the mall
+	* what is your shop called?
+
+== 6/5/14
+	* infrastructure/ co so ha tang
+	* Injection/ tiem
+	* a beer drinker
+
+== 7/5/14
+	* wire/ day
+	* acquaintance/ nguoi quen
+	* What sports can you play?
+	* it is my bag
+	* it is dieu's hand phone
+	* it's yours/dieu's
+	* whose car is that?

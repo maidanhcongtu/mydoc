@@ -1,0 +1,13 @@
+= Maven plugin example
+
+== Global properties config defaul
+
+[source,xml]
+----
+<properties> 
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source> <1>
+    <maven.compiler.target>1.7</maven.compiler.target> <1>
+</properties>
+----
+<1> Default we have in maven

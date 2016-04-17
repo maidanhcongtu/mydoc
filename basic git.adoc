@@ -1,0 +1,31 @@
+= Basic Git
+
+== Init Git
+
+[source, code]
+----
+ git init
+----
+
+== Get Status of GIT
+
+[source, code]
+----
+git status
+----
+
+== Clone git source
+
+[source, code]
+----
+git clone ssh://561ce43c89f5cffe4a000113@api-sctu.rhcloud.com/~/git/api.git/
+----
+
+== Commit code to git
+
+[source, code]
+----
+git add .
+git commit -m 'My changes'
+git push
+----

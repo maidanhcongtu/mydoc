@@ -1,0 +1,33 @@
+= Hamcrest useage
+
+== Assert
+
+[source, java]
+----
+Assert.assertThat(englishSalaryTypes, Matchers.hasSize(3));
+Assert.assertThat(englishSalaryTypes, Matchers.containsInAnyOrder(
+		salaryTypeWithSatKey("1002"),
+		salaryTypeWithSatKey("1036"),
+		salaryTypeWithSatKey("1038")
+		));
+----
+
+== Custom matcher
+
+[source, java]
+----
+public static <T> Matcher<SalaryType> salaryTypeWithSatKey(final String satKey) {
+    return new TypeSafeMatcher<SalaryType>() {
+
+        @Override
+        protected boolean matchesSafely(SalaryType t) {
+            return t.getSatKey().equals(satKey);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("salary type with '" + satKey + "'");
+        }
+    };
+}
+----

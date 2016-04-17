@@ -1,0 +1,27 @@
+= Ralative angular js setup
+
+[IMPORTANT]
+require install nodejs
+
+== Basic Http server
+
+[source, code]
+----
+	npm install http-server -g <1>
+	http-server -a localhost -p 8000 <2>
+----
+<1> Install http-server with global folder
+<2> Start http-server with current folder and with specific port
+
+link: https://www.npmjs.com/package/http-server
+
+== Basic Bower
+
+[source, code]
+----
+	npm install -g bower <1>
+----
+<1> Install bower with global folder
+
+
+

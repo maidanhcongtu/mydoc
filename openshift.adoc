@@ -1,0 +1,24 @@
+﻿= Open Shift Cloude
+
+== Installing the OpenShift Client Tools
+
+[source, xml]
+----
+	gem install rhc <1>
+	gem update rhc <2>
+	rhc setup <3>
+	rhc logout <4>
+	rhc account <5>
+	rhc ssh {application name} <6>
+	rhc apps <7>
+	rhc alias add <application name> <custom domain name> <8>
+----
+<1> Install rhc
+<2> Update new version [option]
+<3> Set update rhc to connect account, left domain empty
+<4> Logout rhc
+<5> View account information
+<6> Connect application
+<7> View all app
+<8> Create alias for domain
+

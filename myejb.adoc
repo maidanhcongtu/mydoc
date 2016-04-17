@@ -1,0 +1,77 @@
+= My EJB full
+
+== Create project
+
+[source, code]
+----
+	Create maven project with type - maven-archetype-quickstart <1>
+	After that change packaging of project to "pom" type <2>
+	Add config properties project.build.sourceEncoding, maven.compiler.source, maven.compiler.target 1.7 <3>
+	remove project(not delete physical folder) and go to directory project folder delete all except "src, and pom file" <4>
+	Import maven project again <5>
+	Create ear module project with type is "maven-archetype-quickstart" <6>
+	Create ejb module project with type is "maven-archetype-quickstart" <7>
+	Create war module project with type is "maven-archetype-webapp" <7>
+	Remember packaging correct with type
+----
+
+*Plugin package ejb and ear project*
+
+[source, xml]
+----
+<!-- plugin package for ear --> <1>
+<plugin>
+	<artifactId>maven-ear-plugin</artifactId>
+	<version>2.9.1</version>
+	<configuration>
+	    <defaultLibBundleDir>lib/</defaultLibBundleDir>
+	    <modules>
+	        <webModule>
+	            <groupId>mhdanh.api</groupId>
+	            <artifactId>ejbdoc-war</artifactId>
+	            <contextRoot>/dejb</contextRoot>
+	        </webModule>
+	        <!-- can add more -->
+	    </modules>
+	</configuration>
+</plugin>
+
+<!-- plugin package verion ejb --> <2>
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-ejb-plugin</artifactId>
+	<version>2.5.1</version>
+	<configuration>
+  		<ejbVersion>3.0</ejbVersion>
+	</configuration>
+</plugin>
+----
+
+
+[IMPORTANT]
+Remember add *@ApplicationPath* and extends Application for config root api
+
+[IMPORTANT]
+*@PersistenceUnit* used for EntityManagerFactory, *@PersistenceContext* used for EntityManager
+
+*QUERY SELECT LIST*
+
+[source, java]
+----
+String str = "SELECT room FROM RoomEntity room WHERE room.name = :name";
+Query query = entityManager.createQuery(str, RoomEntity.class);
+query.setParameter("name", "admin");
+return query.getResultList(); <1>
+----
+
+*QUERY UPDATE/DELETE*
+
+[source, java]
+----
+String str = "DELETE FROM RoomEntity room where room.name = :name";
+String str = "UPDATE RoomEntity room SET room.name = 'okman' where room.name = :name";
+Query query = entityManager.createQuery(str);
+query.setParameter("name", "room 1");
+return query.executeUpdate();
+----
+

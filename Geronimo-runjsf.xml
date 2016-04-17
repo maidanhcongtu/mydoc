@@ -1,0 +1,44 @@
+*************************************************************************************
+* Run jsf in eclipse
+*************************************************************************************
+
+<!-- ---------------------------
+ 	b1 
+ 	Open geronimo config file on server : ${GERONIMO}/var/config/config.xml
+	Find myface module
+ ------------------------ -->
+<module name="org.apache.geronimo.configs/myfaces/3.0.1/car"/>
+<module name="org.apache.geronimo.configs/myfaces-deployer/3.0.1/car"/>
+Add attribute load="false" or remove this line
+
+<!-- ---------------------------
+ 	b2 
+ ------------------------ -->
+Config two file geronimo-plugin.xml and plan.xml on
+${GERONIMO}/repository/org/apache/geronimo/configs/openejb/3.0.1/openejb-3.0.1.car/META-INF
+folder
+Comment or remove myfaces dependency
+<dependency>
+	<groupId>org.apache.myfaces.core</groupId>
+	<artifactId>myfaces-bundle</artifactId>
+	<version>2.1.10</version>
+	<type>jar</type>
+</dependency>
+
+<!-- ---------------------------
+ 	b3 
+ ------------------------ -->
+
+ run command line below at ${GERONIMO}/bin
+ ./geronimo start -c or ./geronimo run -c
+
+<!-- ---------------------------
+ 	b4 if you see error could not load full .... 
+ ------------------------ -->
+
+ add "metadata-complete='true'" into web.xml like code below
+ <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         id="WebApp_ID" version="3.0" metadata-complete="true">

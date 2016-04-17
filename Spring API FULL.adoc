@@ -1,0 +1,578 @@
+= Spring API, Maven 3.0, Hibernate, Security, Rest API
+
+== Build Maven 3.0 project
+
+1. Create maven project(maven archetype webapp) in eclipse as normal
+
+2. Add maven compiler plugin to pom.xml file
+
+[source, xml]
+----
+<build>
+	<finalName>TestApp</finalName>
+	<pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</pluginManagement>
+</build>
+
+|| OR
+
+<properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<maven.compiler.source>1.7</maven.compiler.source>
+	<maven.compiler.target>1.7</maven.compiler.target>
+</properties>
+----
+
+3. Add web.xml title to web module 3.0
+
+[source, xml]
+----
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+</web-app>
+----
+
+4. Finally update project
+
+[source, java]
+----
+	Right click project -> Maven -> Update Project -> Check on Force Update of Snapshots/Release
+----
+
+== All dependencies from spring, spring security, hibernate
+
+[source, xml]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mhdanh.springapi</groupId>
+	<artifactId>springapi</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>springapi Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<spring.version>4.2.0.RELEASE</spring.version>
+		<spring.security.version>4.0.2.RELEASE</spring.security.version>
+		<hibernate.version>4.3.11.Final</hibernate.version>
+		<sql.server.version>4.1</sql.server.version>
+		<jstl.version>1.2</jstl.version>
+		<jackson.version>2.6.3</jackson.version>
+<!-- 		<postgresql.jdbc.version>9.3-1104-jdbc4</postgresql.jdbc.version> -->
+		<postgresql.jdbc.version>9.2-1003-jdbc4</postgresql.jdbc.version>
+	</properties>
+
+	<dependencies>
+	
+		<!-- Spring dependencies -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+	
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-orm</artifactId>
+		    <version>${spring.version}</version>
+		</dependency>
+		
+		<!--  -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+
+		<!-- sql driver just use for local -->
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>sqljdbc41</artifactId>
+		    <version>${sql.server.version}</version>
+		</dependency>
+		
+		<!-- driver postgres use for both -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.jdbc.version}</version>
+		</dependency>
+		
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<!-- jstl for jsp page -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		
+
+	</dependencies>
+	<build>
+		<finalName>springapi</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+		
+</project>
+
+----
+
+== Initial Spring Security
+
+
+=== Simple security config for test
+[source, xml]
+----
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+	
+	<http pattern="/admin/**" create-session="stateless" use-expressions="true" realm="Welcome My API">
+	    <intercept-url pattern="/**" access="isFullyAuthenticated()"/>
+	    <http-basic />
+	</http>
+	<!-- use more config here -->
+ 	<http auto-config="true">
+ 		<intercept-url pattern="/admin**" access="ROLE_USER" />
+ 	</http>
+
+	<authentication-manager>
+	  <authentication-provider>
+	    <user-service>
+			<user name="admin" password="123" authorities="ROLE_USER" />
+	    </user-service>
+	  </authentication-provider>
+	</authentication-manager>
+
+</beans:beans>
+----
+
+=== Security with UserDetail and password encode
+
+*1. Xml config*
+
+[source, xml]
+----
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.0.xsd
+	http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<context:component-scan base-package="com.mhdanh.*" />
+	<!-- this one for enable presecure with annotation -->
+
+
+	<http pattern="/admin/**" create-session="stateless"
+		use-expressions="true" realm="Welcome My API">
+		<intercept-url pattern="/**" access="isFullyAuthenticated()" />
+		<http-basic />
+	</http>
+
+	<http auto-config="true">
+		<intercept-url pattern="/hello" access="hasRole('ROLE_USER')" />
+	</http>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="myUserDetails">
+		<password-encoder hash="bcrypt"/> <1>
+		</authentication-provider>
+	</authentication-manager>
+	<beans:bean id="myUserDetails" class="com.mhdanh.api.services.MyUserDetailService"></beans:bean>
+</beans:beans>
+----
+
+<1> *Other encode password example*
+
+[source, code]
+----
+<!-- xml config -->
+....
+<password-encoder hash="sha">
+	<salt-source user-property="username"/> <!-- salt get from method getUsername() -->
+</password-encoder>
+....
+
+<!-- java code -->
+@Override
+public String getPassword() {
+	ShaPasswordEncoder encode = new ShaPasswordEncoder();
+	String passwordEncode = encode.encodePassword("1",getUsername());
+	return passwordEncode;
+}
+----
+
+OR
+
+[source, code]
+----
+<!-- xml config -->
+....
+<password-encoder hash="sha-256">
+	<salt-source user-property="username"/> <!-- salt get from method getUsername() -->
+</password-encoder>
+....
+
+<!-- java code -->
+@Override
+public String getPassword() {
+	ShaPasswordEncoder encode = new ShaPasswordEncoder(256);
+	String passwordEncode = encode.encodePassword("1",getUsername());
+	return passwordEncode;
+}
+----
+
+
+
+*2. Create class for implematation UserDetailService in spring security*
+
+[source, java]
+----
+package com.mhdanh.api.services;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+public class MyUserDetailService implements UserDetailsService{
+
+	@Override
+	public UserDetails loadUserByUsername(String username)
+			throws UsernameNotFoundException {
+		System.out.println("load user by username");
+			if(username == "mhdanh") {
+				throw new UsernameNotFoundException("mhdanh is not allow");
+			} 
+		return new UserContext(username);
+	}
+
+}
+----
+
+*3. Create class for implematation UserDetail in spring security*
+
+[source, java]
+----
+package com.mhdanh.api.services;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+public class UserContext implements UserDetails {
+
+	private static final long serialVersionUID = 1L;
+
+	private String username;
+	
+	public UserContext(String username) {
+		this.username =  username;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		if(username != "mhdanh") {
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+		return bCryptPasswordEncoder.encode("maidanh");
+	}
+
+	@Override
+	public String getUsername() {
+		return this.username;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+}
+----
+
+
+
+== Initial Hibernate
+
+* Add properties to
+
+[source, code]
+----
+#PROPERTIES FOR SQL SERVER 2008
+#database.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+#database.url=jdbc:sqlserver://localhost:1433;DatabaseName=MyAPI
+#database.username=sa
+#database.password=Mhdanh123
+#hibernate.dialect=org.hibernate.dialect.SQLServer2008Dialect
+
+#PROPERTIES FOR POSTGRESQL
+database.driver=org.postgresql.Driver
+database.url=jdbc:postgresql://localhost:5432/MyAPI
+database.username=postgres
+database.password=Mhdanh123
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+
+hibernate.show_sql=false
+hibernate.hbm2ddl.auto=update
+----
+
+
+[source, xml]
+----
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/jee
+http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${database.driver}" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- This section will provide package and class hibernate need to mapping 
+			=]] -->
+		<!-- Auto mapping entity into database :"> | It's very simple - But nobody know it -->
+		<property name="packagesToScan" value="com.mhdanh.api.domain"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- Enable the configuration of transaction behavior based on annotation -->
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+</beans>
+----
+
+== Add dispatcher Servlet
+
+[source, xml]
+----
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- multiple file sperate by common -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	
+	<context:component-scan base-package="com.mhdanh.*" />
+	<mvc:annotation-driven />
+	
+	<import resource="hibernate-context.xml"/>
+</beans>
+----
+
+
+== Config Webxml
+
+[source, xml]
+----
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>Archetype Created Web Application</display-name>
+
+	<!-- define other name file  -->
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/root-context.xml</param-value>
+    </context-param>
+	
+	<!-- Spring MVC -->
+	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Loads Spring Security config file -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring-security.xml
+		</param-value>
+	</context-param>
+
+	<!-- Spring Security -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>
+----
+
+== Java Example
+
+[source, java]
+----
+@RestController
+@RequestMapping(value={"/admin"})
+public class AdminAPI {
+	
+	@RequestMapping(value = {"/",""})
+	public String sayAdmin() {
+		return "say admin";
+	}
+	
+}
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PublicAPI {
+	
+	@RequestMapping("/hello")
+	public String sayHello() {
+		return "hello my friend";
+	}
+	
+	@RequestMapping("/hello-again")
+	public Object sayHelloAgain() {
+		Map<String, String> maps = new HashMap<>();
+		maps.put("Name", "Mai Huu Danh");
+		maps.put("Name1", "Nhung");
+		return maps;
+	}
+	
+}
+----

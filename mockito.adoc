@@ -1,0 +1,191 @@
+= Basic Mockito and Powermock
+
+== Mockito
+
+=== Library
+
+[source,xml]
+----
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-all</artifactId>
+		<version>1.9.5</version>
+	</dependency>
+----
+
+=== Static import
+
+[source, java]
+----
+import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+----
+
+=== First Example
+[source,java]
+----
+@Test
+public void hello() {
+	// arrange
+	Iterator i = mock(Iterator.class);
+	when(i.next()).thenReturn("Hello").thenReturn("World");
+	// act
+	String result = i.next() + " " + i.next();
+	// assert
+	assertEquals("Hello World", result);
+}
+----
+
+=== Second Example
+
+[source,java]
+----
+@Test
+public void with_arguments(){
+	Comparable c=mock(Comparable.class);
+	when(c.compareTo("Test")).thenReturn(1);
+	assertEquals(1,c.compareTo("Test"));
+}
+----
+
+=== Third Example
+
+[source,java]
+----
+@Test
+public void with_unspecified_arguments(){
+	Comparable c=mock(Comparable.class);
+	when(c.compareTo(anyInt())).thenReturn(-1);
+	assertEquals(-1,c.compareTo(5));
+}
+----
+
+== Powermock
+
+[IMPORTANT]
+Powermock extend mockito so every method from mockito can be used in powermock. 
+In powermock we can mock *final class*, *private method*, *constructor*, *static method*
+
+[INFORMATION]
+we can you Mockito.any(String.class) to put any string
+
+[source, xml]
+----
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.powermock</groupId>
+		<artifactId>powermock-module-junit4</artifactId>
+		<version>1.6.2</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.powermock</groupId>
+		<artifactId>powermock-api-mockito</artifactId>
+		<version>1.6.2</version>
+	</dependency>
+----
+
+=== Runner with power mock runner
+
+[source,java]
+----
+	@RunWith(PowerMockRunner.class)
+	@PrepareForTest({PublicMethodTest.class})
+	public class MyTest {
+	}
+----
+
+=== Mock Constructor Example With No Argument
+
+[source,java]
+----
+	@Test
+	public void saveEmployeeTest() throws Exception {
+		PublicMethodTest publicMethodTest = new PublicMethodTest();
+		
+		Employee employeeMock = PowerMockito.mock(Employee.class);
+		Services servicesMock = PowerMockito.mock(Services.class);
+		
+		publicMethodTest.setServices(servicesMock);
+		
+		PowerMockito.whenNew(Employee.class).withNoArguments().thenReturn(employeeMock);
+		//PowerMockito.whenNew(Employee.class).withArguments(1, "mhdanh", 24).thenReturn(employeeMock);
+		
+		PowerMockito.doNothing().when(servicesMock).saveEmployee(employeeMock);
+		
+		publicMethodTest.saveEmployee();
+		
+		PowerMockito.verifyNew(Employee.class).withNoArguments();
+		Mockito.verify(servicesMock).saveEmployee(employeeMock);
+		
+	}
+----
+
+=== Mock Private Method
+
+[source,java]
+----
+	PartialMockClass classUnderTest = PowerMockito.spy(new PartialMockClass());
+
+    // use PowerMockito to set up your expectation
+    PowerMockito.doReturn(value).when(classUnderTest, "methodToMock", "parameter1");
+
+    // execute public method contain private method
+	Assert.assertThat("ok mhdanh", classUnderTest.callPublishMethod());
+
+	// Use PowerMockito.verify() to verify result
+    PowerMockito.verifyPrivate(classUnderTest, times(2)).invoke("methodToMock", "parameter1");
+----
+
+=== Mock Static Method
+
+[IMPORTANT]
+Dont forget prepare for test @PrepareForTest({PublicMethodTest.class,Services.class})
+
+[source, java]
+----
+	PowerMockito.mockStatic(Services.class);
+	PowerMockito.when(Services.heyMan()).thenReturn("mhdanh");
+	String okman = Services.heyMan();
+	Assert.assertEquals("mhdanh", okman);
+----
+
+=== Mock final method
+
+[CAUTION]
+We final class and final method as normal 
+
+*1 Final class*
+
+[source, java]
+----
+	FinalClass finalClass = PowerMockito.mock(FinalClass.class);
+	PowerMockito.when(finalClass.myName("mhdanh")).thenReturn("mai huu danh");
+	
+	String finaString = finalClass.myName("mhdanh");
+	Assert.assertEquals("mai huu danh", finaString);
+----
+
+*2. Final method*
+
+[source, java]
+----
+	FinalClass finalClass = PowerMockito.mock(FinalClass.class);
+	PowerMockito.when(finalClass.yourName("nhung")).thenReturn("just nhung");
+
+	String finaString = finalClass.yourName("nhung");
+	Assert.assertEquals("just nhung", finaString);
+----
+

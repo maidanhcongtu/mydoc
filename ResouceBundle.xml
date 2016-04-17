@@ -1,0 +1,52 @@
+**************************************
+* Use resouce bundle in spring mvc
+**************************************
+
+/**
+*	require 
+**/
+
+<!-- Create messages_en.properties in main/java/resouce -->
+#Client ID of Mr nang
+msg.client.id=TestApp
+msg.client.secret=bcvddfFDasdW2406
+msg.webservice.url=http://employeecontacttest.axonactive.vn.local:8080
+<!-- Create messages_vi.properties in main/java/resouce -->
+#Client ID of Mr nang
+msg.client.id=Chuong trinh test
+msg.client.secret=bcvddfFDasdW2406
+msg.webservice.url=http://employeecontacttest.axonactive.vn.local:8080
+<!-- Add bean in application context -->
+<bean id="messageSource"
+	class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+	<property name="basename" value="classpath:msg/messages"></property>
+	<property name="defaultEncoding" value="UTF-8"></property>
+</bean>
+
+<!-- Define a locale change interceptor -->
+<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"> 
+	<property name="paramName" value="lang"></property> </bean>
+
+<mvc:interceptors>
+	<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="lang" />
+	</bean>
+</mvc:interceptors>
+
+<!-- Define localResolver -->
+<bean id="localeResolver"
+	class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+	<property name="defaultLocale" value="en"></property>
+</bean>
+
+<bean id="handlerMapping"
+	class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<property name="interceptors">
+		<ref bean="localeChangeInterceptor" />
+	</property>
+</bean>
+<!-- in jsp -->
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<span class = "content"><spring:message code="msg.client.secret" /></span>
+<!-- change language -->
+link?lang=en
