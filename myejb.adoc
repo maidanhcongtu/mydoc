@@ -75,3 +75,149 @@ query.setParameter("name", "room 1");
 return query.executeUpdate();
 ----
 
+
+== CDI example
+
+*@Alternative*
+
+we apply @Alternative for each implatation and config which implematation can be use in which evironment
+in beans.xml in webapp folder. remember put it in webapp
+
+[source, xml]
+----
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+
+    <alternatives>
+        <class>mhdanh.ejbdoc.bussiness.LocalValidateBusinessImpl</class>
+    </alternatives>
+
+</beans>
+----
+
+== Persistent file
+
+* We create datasource on wildfly and use it in persistent file, and also have jndi binding
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="ejb_pu" transaction-type="JTA">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		
+		<jta-data-source>ejbdoc</jta-data-source>
+		
+		<properties>
+<!-- 			Bind entity manager factory to JNDI at java:jboss/myEntityManagerFactory -->
+			<property name="jboss.entity.manager.jndi.name" value="java:/ejbdoc_em" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"></property>
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.show_sql" value="true" />
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="ejb_pu_tmp" transaction-type="JTA">
+		<jta-data-source>ejbdoc_tmp</jta-data-source>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+	</persistence-unit>
+</persistence>
+----
+
+== Lookup JNDI
+
+[source, java]
+----
+@ForHeaderDB
+@Produces
+EntityManager getEm() throws NamingException {
+	Context ctx = new InitialContext();
+    return (EntityManager) ctx.lookup("java:/ejbdoc_em_tmp");
+}
+----
+
+== Using Interceptor
+
+* create simple interceptor
+
+[source, java]
+----
+public class MyInterceptor { <1>
+	
+	@AroundInvoke
+	public Object printLog(InvocationContext context) throws Exception {
+		Logger.getLogger("Okman").log(Level.INFO, "Before execute method ");
+		Object result = context.proceed();
+		Logger.getLogger("Okman").log(Level.INFO, "After execute method ");
+		return result;
+	}
+	
+}
+
+@Interceptors(MyInterceptor.class) <2>
+public Object saveRoom() {
+	return roomBusiness.saveRoom();
+}
+----
+<1> Create class interceptor
+<2> Use it
+
+
+* customer interceptor
+
+[source, java]
+----
+
+@Inherited
+@InterceptorBinding
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RequestVerify { <1>
+	
+}
+
+@Interceptor
+@RequestVerify
+@Priority(Interceptor.Priority.APPLICATION) <3>
+public class RequestVerifyInterceptor { <2>
+	
+	@AroundInvoke
+	public Object checkRequest(InvocationContext context) throws Exception {
+		
+		Logger.getLogger("MyLog").log(Level.INFO, "Request Header information ID");
+		Logger.getLogger("MyLog").log(Level.INFO, "My ID " + id);
+		
+		//if("strop".equals(id)) {
+		//	throw new Exception("Stop here dont go further");
+		//}
+		Object obj = context.proceed();
+		return obj;
+	}
+	
+}
+----
+<1> Create new annotation
+<2> Create class interceptor
+<3> Enable interceptor in application
+
+
+*Enable interceptor in application in beans.xml*
+
+[source, xml]
+----
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+
+    ...
+
+	<interceptors>
+    	<class>mhdanh.ejbdoc.interceptor.RequestVerifyInterceptor</class>
+    </interceptors>
+    
+</beans>
+----
