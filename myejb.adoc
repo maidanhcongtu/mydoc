@@ -184,16 +184,23 @@ public @interface RequestVerify { <1>
 @RequestVerify
 @Priority(Interceptor.Priority.APPLICATION) <3>
 public class RequestVerifyInterceptor { <2>
-	
+
 	@AroundInvoke
 	public Object checkRequest(InvocationContext context) throws Exception {
 		
-		Logger.getLogger("MyLog").log(Level.INFO, "Request Header information ID");
-		Logger.getLogger("MyLog").log(Level.INFO, "My ID " + id);
-		
-		//if("strop".equals(id)) {
-		//	throw new Exception("Stop here dont go further");
-		//}
+		Logger.getLogger("MyLog").log(Level.INFO, "Request Header information ID " + context.getTarget());
+
+		Object target = context.getTarget();
+		if(target instanceof RestResource) {
+			RestResource restResource = (RestResource) context.getTarget();
+			HttpServletRequest request = restResource.getServletRequest();
+			String id = request.getHeader("My_ID");
+			Logger.getLogger("MyLog").log(Level.INFO, "My ID " + id);
+			
+			if("123".equals(id)) {
+				throw new Exception("Plz dont go further " + id);
+			}
+		}
 		Object obj = context.proceed();
 		return obj;
 	}
@@ -203,6 +210,24 @@ public class RequestVerifyInterceptor { <2>
 <1> Create new annotation
 <2> Create class interceptor
 <3> Enable interceptor in application
+
+[IMPORTANT]
+We should create parent restResource to get httpServletRequest and other resource must extent this class
+
+[source, java]
+----
+@RequestScoped
+public class RestResource {
+
+	@Context
+	private HttpServletRequest servletRequest;
+
+	public HttpServletRequest getServletRequest() {
+		return servletRequest;
+	}
+
+}
+----	
 
 
 *Enable interceptor in application in beans.xml*
@@ -221,3 +246,5 @@ public class RequestVerifyInterceptor { <2>
     
 </beans>
 ----
+
+

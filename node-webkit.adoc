@@ -1,0 +1,43 @@
+﻿= Node Webkit
+
+== Package Json Example
+
+[source,json]
+----
+{
+	"name": "nw-demo",
+	"version": "0.0.1",
+	"main": "index.html",
+	"scripts": {
+		"start": "nodewebkit"
+	},
+	"window": {
+		"title": "Hello Native apps",
+		"toolbar": false,
+		"frame": false,
+		"width": 850,
+		"height": 500,
+		"position": "center",
+		"resizable": true,
+		"icon": "sample.png"
+	}
+}
+----
+
+== Basic command
+
+[source, code]
+----
+	node -v <1>
+	npm -v <2>
+	copy /b nw.exe+app.nw app.exe <3>
+----
+<1> check node with versoin
+<2> check npm with version
+
+
+== Package App to exe
+
+ 1. Zip source code
+ 2. copy that zip file to directory *nv.exe* 
+ 3. Open cmd and run this command *copy /b nw.exe+app.nw app.exe*
