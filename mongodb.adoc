@@ -23,4 +23,4 @@ http://localhost:28017/mymongodb/users/?limit=10 <5>
 <2> Use other cmd to connect to server
 <3> Use db or create new one if it doesnt exist
 <4> to use insert data to collection
-<5> Rest api to retrieve data
+<5> Rest api to retrieve data 
