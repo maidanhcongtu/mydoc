@@ -1,0 +1,26 @@
+= Mongodb
+
+== Basic command
+
+[source, code]
+----
+mongod <1>
+mongod --dbpath "d:\db\mongodb\data" <2>
+----
+<1> check mongod install or not
+<2> create location folder data
+
+== Create new database
+[source, code]
+----
+mongod --rest --dbpath "d:\db\mongodb\data" <1>
+mongo <2>
+use dbname <3>
+db.table.insert(jsondata); <4>
+http://localhost:28017/mymongodb/users/?limit=10 <5>
+----
+<1> Open connection to server
+<2> Use other cmd to connect to server
+<3> Use db or create new one if it doesnt exist
+<4> to use insert data to collection
+<5> Rest api to retrieve data
