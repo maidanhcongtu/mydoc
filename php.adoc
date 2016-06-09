@@ -1,0 +1,23 @@
+﻿= MY PHP
+
+== How to debug with sublime text 3
+
+[source, code]
+----
+Download php_xdebug-2.4.0-5.5-vc11.dll 
+Move the downloaded file to D:\xampp\php\ext
+Update D:\xampp\php\php.ini and change the line
+zend_extension = D:\xampp\php\ext\php_xdebug-2.4.0-5.5-vc11.dll
+xdebug.remote_enable=1
+Restart the webserver
+
+https://techmaster.vn/posts/5891/lap-trinh-web-bang-php
+----
+
+== Debug with php function
+
+[source, php]
+----
+	print_r <1>
+	var_dump <2>
+----

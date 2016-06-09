@@ -1,0 +1,11 @@
+﻿= Stylus Usage
+
+== Basic Command
+
+[source, code]
+----
+	npm install stylus -g <1>
+	stylus -w style.styl -o style.css <2>
+----
+<1> install stylus
+<2> complile to css file
