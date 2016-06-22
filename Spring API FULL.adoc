@@ -64,7 +64,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>springapi Maven Webapp</name>
 	<url>http://maven.apache.org</url>
-	
+
 	<properties>
 		<spring.version>4.2.0.RELEASE</spring.version>
 		<spring.security.version>4.0.2.RELEASE</spring.security.version>
@@ -77,7 +77,7 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -96,13 +96,13 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-	
+
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-orm</artifactId>
 		    <version>${spring.version}</version>
 		</dependency>
-		
+
 		<!--  -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -116,14 +116,14 @@
 		    <artifactId>sqljdbc41</artifactId>
 		    <version>${sql.server.version}</version>
 		</dependency>
-		
+
 		<!-- driver postgres use for both -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.jdbc.version}</version>
 		</dependency>
-		
+
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -143,13 +143,13 @@
 			<artifactId>jstl</artifactId>
 			<version>${jstl.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		
+
 
 	</dependencies>
 	<build>
@@ -167,7 +167,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-		
+
 </project>
 
 ----
@@ -179,13 +179,13 @@
 [source, xml]
 ----
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans" 
+	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-4.0.xsd">
-	
+
 	<http pattern="/admin/**" create-session="stateless" use-expressions="true" realm="Welcome My API">
 	    <intercept-url pattern="/**" access="isFullyAuthenticated()"/>
 	    <http-basic />
@@ -206,6 +206,16 @@
 </beans:beans>
 ----
 
+*some common access role in spring security*
+
+[source, java]
+----
+isAnonymous()
+hasRole('ROLE_USER')
+isAuthenticated()
+isFullyAuthenticated()
+----
+
 === Security with UserDetail and password encode
 
 *1. Xml config*
@@ -219,7 +229,7 @@
 	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-4.0.xsd
-	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<context:component-scan base-package="com.mhdanh.*" />
@@ -305,7 +315,7 @@ public class MyUserDetailService implements UserDetailsService{
 		System.out.println("load user by username");
 			if(username == "mhdanh") {
 				throw new UsernameNotFoundException("mhdanh is not allow");
-			} 
+			}
 		return new UserContext(username);
 	}
 
@@ -332,7 +342,7 @@ public class UserContext implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	private String username;
-	
+
 	public UserContext(String username) {
 		this.username =  username;
 	}
@@ -418,9 +428,9 @@ hibernate.hbm2ddl.auto=update
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-4.0.xsd
-http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx
 http://www.springframework.org/schema/tx/spring-tx.xsd
 http://www.springframework.org/schema/jee
 http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
@@ -435,7 +445,7 @@ http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<!-- This section will provide package and class hibernate need to mapping 
+		<!-- This section will provide package and class hibernate need to mapping
 			=]] -->
 		<!-- Auto mapping entity into database :"> | It's very simple - But nobody know it -->
 		<property name="packagesToScan" value="com.mhdanh.api.domain"></property>
@@ -465,19 +475,19 @@ http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
-        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<!-- multiple file sperate by common -->
 	<context:property-placeholder location="classpath:jdbc.properties" />
-	
+
 	<context:component-scan base-package="com.mhdanh.*" />
 	<mvc:annotation-driven />
-	
+
 	<import resource="hibernate-context.xml"/>
 </beans>
 ----
@@ -498,7 +508,7 @@ http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/root-context.xml</param-value>
     </context-param>
-	
+
 	<!-- Spring MVC -->
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
@@ -543,12 +553,12 @@ http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
 @RestController
 @RequestMapping(value={"/admin"})
 public class AdminAPI {
-	
+
 	@RequestMapping(value = {"/",""})
 	public String sayAdmin() {
 		return "say admin";
 	}
-	
+
 }
 
 
@@ -560,12 +570,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PublicAPI {
-	
+
 	@RequestMapping("/hello")
 	public String sayHello() {
 		return "hello my friend";
 	}
-	
+
 	@RequestMapping("/hello-again")
 	public Object sayHelloAgain() {
 		Map<String, String> maps = new HashMap<>();
@@ -573,6 +583,6 @@ public class PublicAPI {
 		maps.put("Name1", "Nhung");
 		return maps;
 	}
-	
+
 }
 ----

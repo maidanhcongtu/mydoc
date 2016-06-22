@@ -1,0 +1,21 @@
+﻿= My PHP
+
+== PHP core
+
+*Get current path file2*
+[source, php]
+----
+__FILE__
+----
+
+*Get Directory of path*
+[source, php]
+----
+dirname(__FILE__)
+----
+
+*Disable reporting*
+[source, PHP]
+----
+error_reporting(0);
+----
