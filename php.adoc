@@ -12,6 +12,8 @@ xdebug.remote_enable=1
 Restart the webserver
 
 https://techmaster.vn/posts/5891/lap-trinh-web-bang-php
+
+param for debug : ?XDEBUG_SESSION_START=sublime.xdebug
 ----
 
 == Debug with php function
