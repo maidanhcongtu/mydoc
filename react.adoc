@@ -1,9 +1,92 @@
-npm install jquery --save
+= React Doc
 
-plugins: [
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery',
-      $: 'jquery',
-      jquery: 'jquery'
-    })
-  ]
+
+== Requirement
+
+*Npm package*
+
+[source, code]
+----
+npm init <1>
+<2>
+npm install --save react react-dom
+npm install --save--dev babel-core babel-loader babel-preset-react babel-preset-es2015
+npm install --save jquery
+npm install --save webpack
+webpack -w <3>
+----
+<1> create package.json file
+<2> download library
+<3> package webpack
+
+== Config
+
+*webpack config*
+
+[source, json]
+----
+var webpack = require("webpack");
+
+module.exports = {
+	entry: "./app/components/main.jsx",
+	output: {
+		filename : "public/bundle.js"
+	},
+	module : {
+		loaders: [
+			{
+				test: /\.jsx?$/,
+				loader: "babel",
+				exclude: /(node_modules | bower_components)/,
+				query: {
+					presets: ["react","es2015"]
+				}
+			}
+		]
+	},
+	plugins: [
+	    new webpack.ProvidePlugin({
+	      jQuery: 'jquery',
+	      $: 'jquery',
+	      jquery: 'jquery'
+	    })
+	]
+
+}
+----
+
+== Base function in React
+
+[source, js]
+----
+var React = require("react");
+var ReactDOM = require("react-dom");
+
+var BaseF = React.createClass({
+	getInitialState: function() {
+		//return state for component
+		return {count:0};
+	},
+	componentDidMount: function() {
+		//before render view
+	},
+	handleClick: function() {
+		//use props this.props
+		//set property this.setState({object here});
+
+		this.setState({count: this.state.count + 1});
+
+		//find dom node with rel attribute
+		var inputLogin = React.findDOMNode(this.rels.login);
+	},
+	render: function() {
+		return (
+			<div>
+				<h1>I miss you</h1>
+				<button onClick={this.props.handleClick}>click me {this.props.count}</button>
+			</div>
+		)
+	}
+});
+ReactDOM.render(<BaseF />, document.getElementById("app"));
+----

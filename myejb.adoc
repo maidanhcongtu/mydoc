@@ -1,5 +1,12 @@
 = My EJB full
 
+== Key work for continue researching
+
+[source, code]
+----
+public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper>
+----
+
 == Create project
 
 [source, code]
@@ -173,7 +180,7 @@ public Object saveRoom() {
 ----
 
 @Inherited
-@InterceptorBinding
+@InterceptorBinding <0>
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestVerify { <1>
@@ -207,6 +214,7 @@ public class RequestVerifyInterceptor { <2>
 	
 }
 ----
+<0> It very important that, which process have interceptor
 <1> Create new annotation
 <2> Create class interceptor
 <3> Enable interceptor in application
@@ -247,4 +255,146 @@ public class RestResource {
 </beans>
 ----
 
+== Add Swagger for Rest API
 
+* Require pom file library
+
+[source, xml]
+----
+	<!-- Swagger -->
+	<dependency>
+		<groupId>io.swagger</groupId>
+		<artifactId>swagger-jaxrs</artifactId>
+		<version>1.5.5</version>
+	</dependency>
+----
+
+* Config swagger
+
+[source, java]
+----
+@ApplicationPath("api")
+public class AppConfig extends Application {
+	
+	<1>
+	public AppConfig(){
+		// init for swagger
+		BeanConfig beanConfig = new BeanConfig();
+		beanConfig.setVersion("1.0");
+		beanConfig.setTitle("Welcome to EJB DOC");
+		beanConfig.setDescription("This is all api we create for test example");
+		beanConfig.setSchemes(new String[] { "http", "https"});
+		beanConfig.setBasePath("dejb/api");
+		beanConfig.setResourcePackage("mhdanh.ejbdoc.resource");
+		beanConfig.setScan(true);
+	}
+}
+----
+<1> Method constructor in appconfig rest to initilize swagger
+
+* How to use swagger
+
+[source, java]
+----
+@SwaggerDefinition(info = @Info(description = "This API will be used in LUZ finance projects at AxonIvy company", version = "V1.0.0", title = "Finance REST API", termsOfService = "private"), schemes = {
+		SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS })
+@Api(value = "rooms") // Swagger annotation
+@Path("rooms")
+@RequestScoped
+public class RoomResource extends RestResource{ <1>
+.....
+
+@GET
+@Path("{id}")
+@ApiOperation(value = "Get offer by id", notes = "Get offer by id")
+@ApiResponses(value = {
+        @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = Constants.ENTITY_NOT_FOUND),
+        @ApiResponse(code = HttpServletResponse.SC_OK, message = Constants.MSG_OK, response = Offer.class)})
+public Response findOfferById(@PathParam("id") long id) { <2>
+	Offer offer = offerService.findOfferById(id);
+	return responseWithEntityOr404(offer);
+}
+----
+<1> Defined in rest resource
+<2> Add description on method in rest resource
+
+* apply swagger ui
+
+[source, html]
+----
+https://github.com/swagger-api/swagger-ui <1>
+----
+<1> access that link and download source web app and include in /webapp/index of project
+
+* Config swagger url and customer additional field
+
+[source, js]
+----
+$(function () {
+      var url = window.location.search.match(/url=([^&]+)/);
+      if (url && url.length > 1) {
+        url = decodeURIComponent(url[1]);
+      } else {
+        url = window.location.protocol + "//" + window.location.host + "/luzfin_finance/api/swagger.json"; <1>
+      }
+
+      // Pre load translate...
+      if(window.SwaggerTranslator) {
+        window.SwaggerTranslator.translate();
+      }
+      window.swaggerUi = new SwaggerUi({
+        url: url,
+        validatorUrl : null,
+        dom_id: "swagger-ui-container",
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        onComplete: function(swaggerApi, swaggerUi){
+          if(window.SwaggerTranslator) {
+            window.SwaggerTranslator.translate();
+          }
+          $('pre code').each(function(i, e) {
+            hljs.highlightBlock(e)
+          });
+          
+          addCompanyPanel(); <2>
+        },
+        onFailure: function(data) {
+          log("Unable to Load SwaggerUI");
+        },
+        docExpansion: "none",
+        jsonEditor: false,
+        apisSorter: "alpha",
+        defaultModelRendering: 'schema',
+        showRequestHeaders: false
+      });
+
+      window.swaggerUi.load();
+      
+      function addCompanyPanel() {
+    	  var elementCompany = '<form>' +
+    	  	'<label for="COMPANY_ID" style="font-weight: bold;">Company ID: </label>' + 
+    	  	'<input id="COMPANY_ID" class="parameter" placeholder="Company ID" name="COMPANY_ID" type="text"/>' +
+    	  	'</form>';
+    	  $('#api_info').after(elementCompany);
+    	  triggerCompany();
+      }
+      
+      function triggerCompany() {
+    	// add a new SwaggerClient.ApiKeyAuthorization when the api-key changes in the ui.
+   	    $('#COMPANY_ID').change(function() {
+   	    	var key = $('#COMPANY_ID')[0].value;
+   	        if(key && key.trim() != "") {
+   	           window.swaggerUi.api.clientAuthorizations.add("COMPANY_ID", new SwaggerClient.ApiKeyAuthorization("COMPANY_ID", key, "header"));
+               console.log("added company id: " + key);
+   	        }
+   	    })
+   	}
+
+      function log() {
+        if ('console' in window) {
+          console.log.apply(console, arguments);
+        }
+      }
+  });
+----
+<1> Change url accordding to your url
+<2> Add additional field for execute swagger

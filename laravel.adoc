@@ -1,0 +1,7 @@
+= My Window
+
+[source, code]
+----
+reagentc /enable <1>
+----
+<1> access repaire window in command line
