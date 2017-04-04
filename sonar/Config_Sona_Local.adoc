@@ -1,0 +1,52 @@
+= Sona in local
+
+== Download sonar
+
+Download the lastest sonar from this page https://www.sonarqube.org/downloads/[Lastest Sonar]
+or download in local file link:\\hcmc-fsr\Teams\Avatar\sonar[local file]
+
+== Unzip sonar
+
+* Put that zip file some where you like: e.g D:\sonar-qube-6.2
+
+== Config database
+
+* Create *sonar* database in postgres
+* Open file *sonar.properties* in directory link:D:\soft\sonarqube-6.2\conf[D:\soft\sonarqube-6.2\conf]
+* Uncomment some properties like
+** *sonar.jdbc.username*=postgres
+** *sonar.jdbc.password*=postgres
+** *sonar.jdbc.url*=jdbc:postgresql://localhost:5432/sonar
+
+== Start Sonar
+
+* Run file *StartSonar.bat* in *D:\soft\sonarqube-6.2\bin\windows-x86-64* folder
+* And access website link:http://localhost:9000/profiles[http://localhost:9000] to see result
+
+== Install plugin 
+
+[IMPORTANT]
+http://192.168.48.20:9090/profiles/show?key=java-sonar-way-44821[http://192.168.48.20:9090/profiles/show?key=java-sonar-way-44821]
+
+1. Login with *admin*/*admin*
+2. Access *Administrator menu*
+3. Access *System menu*
+4. Access *Update Center*
+5. Access *tab available*
+6. Search plugin: *CheckStyle*, *Findbugs*, *PMD* -> install -> restart
+
+[TIP]
+In case can not install, go to log file Link:D:\soft\sonarqube-6.2\logs\web.log[logfile] download plugin directly
+For example:
+* *Checkstyle* plugin: download directly here https://github.com/SonarQubeCommunity/sonar-pmd/releases/download/2.6/sonar-pmd-plugin-2.6.jar[Checkstyle plugin]
+* *PMD* plugin: download directly here https://github.com/SonarQubeCommunity/sonar-pmd/releases/download/2.6/sonar-pmd-plugin-2.6.jar[PMD plugin]
+
+== Import profile 
+
+1. Go to http://192.168.48.20:9090/profiles[http://192.168.48.20:9090/profiles] select dropdown menu e.g: *sonar way* and select *backup*
+2. Required login -> go to Menu *Quality Profiles* -> on top right select dropdown menu -> select *restore* -> select file backup
+
+== Run sonar
+
+1. For instance: luzfin_finance *mvn clean install -DskipTests* -> *mvn sonar:sonar*
+2. http://localhost:9000/dashboard/index/com.axonivy.fin:luzfin_finance to see result
