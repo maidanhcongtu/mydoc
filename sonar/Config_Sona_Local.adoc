@@ -26,7 +26,7 @@ or download in local file link:\\hcmc-fsr\Teams\Avatar\sonar[local file]
 == Install plugin 
 
 [IMPORTANT]
-http://192.168.48.20:9090/profiles/show?key=java-sonar-way-44821[http://192.168.48.20:9090/profiles/show?key=java-sonar-way-44821]
+http://localhost:9000/updatecenter/available[http://localhost:9000/updatecenter/available]
 
 1. Login with *admin*/*admin*
 2. Access *Administrator menu*
@@ -46,7 +46,14 @@ For example:
 1. Go to http://192.168.48.20:9090/profiles[http://192.168.48.20:9090/profiles] select dropdown menu e.g: *sonar way* and select *backup*
 2. Required login -> go to Menu *Quality Profiles* -> on top right select dropdown menu -> select *restore* -> select file backup
 
+
+[source, code]
+----
+username: diem.nguyen
+password: creed-Clang1-4venus-kabul-4hefty
+----
+
 == Run sonar
 
-1. For instance: luzfin_finance *mvn clean install -DskipTests* -> *mvn sonar:sonar*
+1. For instance: luzfin_finance *mvn clean install* -> *mvn sonar:sonar*
 2. http://localhost:9000/dashboard/index/com.axonivy.fin:luzfin_finance to see result
