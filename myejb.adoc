@@ -398,3 +398,465 @@ $(function () {
 ----
 <1> Change url accordding to your url
 <2> Add additional field for execute swagger
+
+== Arquillian config
+
+=== Maven properties
+
+[source, code]
+----
+<properties>
+	<version.wildfly>10.0.0.Final</version.wildfly>
+	<maven.compiler.source>1.8</maven.compiler.source>
+	<maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+----
+
+=== Add dependence necessary
+
+[source, xml]
+----
+<!-- Arquillian maven lib -->
+<dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss.arquillian</groupId>
+			<artifactId>arquillian-bom</artifactId>
+			<version>1.1.11.Final</version>
+			<scope>import</scope>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+</dependencyManagement>
+
+<dependencies>
+	<dependency>
+		<groupId>javax</groupId>
+		<artifactId>javaee-api</artifactId>
+	</dependency>
+
+	<dependency>
+		<groupId>org.jboss.arquillian.junit</groupId>
+		<artifactId>arquillian-junit-container</artifactId>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>org.wildfly.arquillian</groupId>
+		<artifactId>wildfly-arquillian-container-managed</artifactId>
+		<version>2.0.0.Final</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>org.jboss.shrinkwrap.resolver</groupId>
+		<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.jboss.arquillian.extension</groupId>
+	    <artifactId>arquillian-persistence-dbunit</artifactId>
+	    <version>1.0.0.Alpha7</version>
+	    <scope>test</scope>
+	</dependency>
+
+	<!-- END ARQUILLIAN -->
+	
+	<dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.6.2</version>
+    </dependency>
+
+	<!-- JSON DATA TYPE -->
+	<dependency>
+		<groupId>com.fasterxml.jackson.datatype</groupId>
+		<artifactId>jackson-datatype-jsr310</artifactId>
+		<version>2.5.4</version>
+	</dependency>
+	<!-- END JSON DATA TYPE -->
+
+	<!-- JUNIT -->
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.hamcrest</groupId>
+		<artifactId>hamcrest-all</artifactId>
+		<version>1.3</version>
+		<scope>test</scope>
+	</dependency>
+	
+	<dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>2.13</version>
+        <scope>test</scope>
+    </dependency>
+	<!-- END JUNIT -->
+</dependencies>
+----
+
+=== Add wildfly plugin and failsafe plugin for run IT
+
+[source, xml]
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-dependency-plugin</artifactId>
+	<version>2.10</version>
+	<executions>
+		<execution>
+			<id>unpack-wildfly</id>
+			<phase>pre-integration-test</phase>
+			<goals>
+				<goal>unpack</goal>
+			</goals>
+			<configuration>
+				<artifactItems>
+					<artifactItem>
+						<groupId>org.wildfly</groupId>
+						<artifactId>wildfly-dist</artifactId>
+						<version>${version.wildfly}</version>
+						<type>zip</type>
+						<overWrite>false</overWrite>
+						<outputDirectory>target</outputDirectory>
+					</artifactItem>
+				</artifactItems>
+			</configuration>
+		</execution>
+
+	</executions>
+</plugin>
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-failsafe-plugin</artifactId>
+	<version>2.19.1</version>
+	<configuration>
+		<!--skipTests>true</skipTests -->
+		<forkCount>1</forkCount>
+		<reuseForks>false</reuseForks>
+		<systemPropertyVariables>
+			<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+			<jboss.home>${project.basedir}/target/wildfly-${version.wildfly}</jboss.home>
+		</systemPropertyVariables>
+		<redirectTestOutputToFile>false</redirectTestOutputToFile>
+		<trimStackTrace>false</trimStackTrace>
+	</configuration>
+	<executions>
+		<execution>
+			<goals>
+				<goal>integration-test</goal>
+				<goal>verify</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin>
+----
+
+=== Config aquillian container and test-persistence
+
+* In folder *main/test/resource* create *arquillian.xml* and *test-persistence.xml* with the following content;
+
+*arquillian.xml file*
+
+[source, xml]
+----
+<arquillian
+    xmlns="http://jboss.org/schema/arquillian"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://jboss.org/schema/arquillian
+    http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <container
+        qualifier="wildfly-arquillian-container-managed"
+        default="true">
+        <configuration>
+            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Djboss.management.native.port=18080 -Xmx512m -XX:MaxPermSize=512m -agentlib:jdwp=transport=dt_socket,address=8787,suspend=y,server=y</property>
+            <property name="managementPort">19990</property>
+        </configuration>
+    </container>
+</arquillian>
+
+-Djboss.socket.binding.port-offset=10000 -Djboss.management.native.port=18080 -Xmx512m -XX:MaxPermSize=512m <1>
+-agentlib:jdwp=transport=dt_socket,address=8787,suspend=y,server=y <2>
+----
+<1> Config port application
+<2> Config debug on port
+
+
+
+*test-persistence.xml file*
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="EJBDocArquillianPU" transaction-type="JTA">
+    <jta-data-source>java:/jboss/datasources/ExampleDS</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
+  </persistence-unit>
+</persistence>
+----
+
+=== Create Deployment WebArchieve
+
+*Create DeploymentFactory java like example below*
+
+[source, java]
+----
+package mhdanh.ejbdoc.arquillian.util;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.Filter;
+import org.jboss.shrinkwrap.api.Filters;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenResolvedArtifact;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
+
+import mhdanh.ejbdoc.arquillian.ApplicationConfig;
+
+public class DeploymentFactory {
+	public static WebArchive createFullDeployment()  {
+		final WebArchive war = ShrinkWrap.create(WebArchive.class, "ejbdoc_arquillian.war")
+				.addAsLibraries(getFiles("com.fasterxml.jackson.datatype:jackson-datatype-jsr310"))
+				.addPackages(true, ApplicationConfig.class.getPackage())
+				.addAsResource("test-persistence.xml", "META-INF/persistence.xml");
+		return war;
+	}
+
+	public static File[] getFiles(String artifactName) {
+		final PomEquippedResolveStage Pom = Maven.resolver().loadPomFromFile("pom.xml");
+		File[] files = Pom.resolve(artifactName).withTransitivity().asFile();
+		return files;
+	}
+
+	private static Filter<ArchivePath> excludeTests() {
+		return Filters.exclude(".*ServiceTest.class");
+	}
+
+	private static File[] addRuntimeDependencies() {
+		List<File> includeFiles = new ArrayList<>();
+		List<String> exclusiveArtifacts = Arrays.asList("luzsec_service", "multi_tenancy_api");
+
+		final PomEquippedResolveStage Pom = Maven.resolver().loadPomFromFile("pom.xml");
+		MavenResolvedArtifact[] artifacts = Pom.resolve("com.axonivy.sec:luzsec_service").withTransitivity().asResolvedArtifact();
+		for (MavenResolvedArtifact artifact : artifacts) {
+			if (!exclusiveArtifacts.contains(artifact.getCoordinate().getArtifactId())) {
+				includeFiles.add(artifact.asFile());
+			}
+		}
+		return includeFiles.toArray(new File[includeFiles.size()]);
+	}
+}
+----
+
+=== Create dataset example xml
+
+*Create file student.xml in folder main/test/source/datasets with content*
+
+[source, xml]
+----
+<dataset>
+    <student id="1" name="mai danh" birthday="1992-08-18" age="12" />
+</dataset>
+----
+
+=== Create ServiceIT Test Case
+
+==== Service IT test example
+
+[source, java]
+----
+package mhdanh.ejbdoc.arquillian.service.it;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.hamcrest.Matchers;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.UsingDataSet;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import mhdanh.ejbdoc.arquillian.dao.StudentDao;
+import mhdanh.ejbdoc.arquillian.entity.StudentEntity;
+import mhdanh.ejbdoc.arquillian.service.StudentService;
+import mhdanh.ejbdoc.arquillian.util.DeploymentFactory;
+
+@RunWith(Arquillian.class)
+public class StudentServiceIT {
+	
+	@Deployment
+	public static WebArchive deployment() {
+		return DeploymentFactory.createFullDeployment().addAsResource("datasets/student.xml");
+	}
+	
+	@Inject
+	private StudentService studentService;
+	
+	@Inject
+	private StudentDao studentDao;
+	
+	@Test
+	public void testSaveStudent() {
+		studentDao.deleteAll();
+		StudentEntity result = saveStudent();
+		Assert.assertThat(result.getId(), Matchers.greaterThan(0l));
+	}
+	
+	@Test
+	public void testGetAllStudent() {
+		studentDao.deleteAll();
+		saveStudent();
+		List<StudentEntity> students = studentService.getAll();
+		Assert.assertThat(students.size(), Matchers.is(1));
+	}
+	
+	@Test
+	@UsingDataSet(value="datasets/student.xml")
+	public void testUsingDataSet() {
+		//studentDao.deleteAll();
+		//saveStudent();
+		List<StudentEntity> students = studentService.getAll();
+		Assert.assertThat(students.size(), Matchers.is(1));
+	}
+
+	private StudentEntity saveStudent() {
+		StudentEntity studentEntity = new StudentEntity();
+		studentEntity.setName("mai huu danh");
+		studentEntity.setBirthday(LocalDate.now());
+		studentEntity.setAge(30);
+		
+		StudentEntity result = studentService.addStudent(studentEntity);
+		return result;
+	}
+}
+----
+
+==== Resource IT test Example
+
+[source, java]
+----
+package mhdanh.ejbdoc.arquillian.service.it.rest;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.hamcrest.Matchers;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.UsingDataSet;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import mhdanh.ejbdoc.arquillian.LocalDateAdapter;
+import mhdanh.ejbdoc.arquillian.entity.StudentEntity;
+import mhdanh.ejbdoc.arquillian.util.DeploymentFactory;
+
+@RunWith(Arquillian.class)
+
+public class StudentResourceIT {
+	
+	@Deployment(testable = true)
+	public static WebArchive createDeployment() {
+		return DeploymentFactory.createFullDeployment();
+	}
+	
+	@Test
+	@RunAsClient
+	public void testSaveStudent(@ArquillianResource URL url) {
+		WebTarget webTarget = ClientBuilder.newClient().target(url.toExternalForm()).path("api").path("students");
+		Builder builder = webTarget.request(MediaType.APPLICATION_JSON);
+		
+		Response response = postAsResponse(buildSampleObject(), builder);
+		Assert.assertThat(response.getStatus(), Matchers.is(Status.OK));
+	}
+	
+	@Test
+	@RunAsClient
+	@UsingDataSet("datasets/student.xml")
+	public void testGetAllStudent(@ArquillianResource URL url) {
+		WebTarget webTarget = ClientBuilder.newClient().target(url.toExternalForm()).path("api").path("students");
+		Builder builder = webTarget.request(MediaType.APPLICATION_JSON);
+		
+		List<StudentEntity> students = getAsListOf(StudentEntity[].class, builder);
+		
+		System.out.println("students size " + students.size());
+	}
+	
+	private StudentEntity buildSampleObject() {
+		StudentEntity result = new StudentEntity();
+		result.setName("mai huu danh");
+		result.setBirthday(LocalDate.now());
+		result.setAge(12);
+		return result;
+	}
+	
+	private Response postAsResponse(Object object, Builder builder) {
+		Gson gson = createGson();
+		String jsonString = gson.toJson(object);
+		
+		InputStream is = new ByteArrayInputStream(jsonString.getBytes());
+
+		Response response =  builder.post(Entity.entity(is, MediaType.APPLICATION_JSON_TYPE));
+		return response;
+	}
+	
+	public <T> List<T> getAsListOf(Class<T[]> clazz, Builder builder) {
+		String jsonString = builder.get(String.class);
+		T[] jsonToObject = createGson().fromJson(jsonString, clazz);
+
+		return Arrays.asList(jsonToObject);
+	}
+
+	private Gson createGson() {
+		GsonBuilder gson = new GsonBuilder();
+		gson.setDateFormat("yyyy-MM-dd");
+
+		LocalDateAdapter localDateAdapter = () -> "yyyy-MM-dd";
+		gson = localDateAdapter.registerTo(gson);
+		return gson.create();
+	}	
+}
+----
